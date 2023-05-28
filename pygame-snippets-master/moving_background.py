@@ -38,13 +38,13 @@ GRAVITY = 1
 # Define a velocidade inicial no pulo
 JUMP_SIZE = 20
 # Define a altura do chão
-GROUND = HEIGHT * 5 // 5.5
+GROUND = 768
 
 # Define estados possíveis do jogador
 STILL = 0
 
 
-# Class que representa os blocos do cenário
+# Class que representa as rodas/canos
 class Tile(pygame.sprite.Sprite):
 
     # Construtor da classe.
@@ -53,7 +53,7 @@ class Tile(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         # Aumenta o tamanho do tile.
-        tile_img = pygame.transform.scale(tile_img, (100, 300))
+        #tile_img = pygame.transform.scale(tile_img, (100, 300))
 
         # Define a imagem do tile.
         self.image = tile_img
@@ -62,7 +62,31 @@ class Tile(pygame.sprite.Sprite):
 
         # Posiciona o tile
         self.rect.x = x
-        self.rect.y = 0 
+        self.rect.y = random.randrange(-834, -503, 52)
+
+        self.speedx = speedx
+
+    def update(self):
+        self.rect.x += self.speedx
+
+class Tile2(pygame.sprite.Sprite):
+
+    # Construtor da classe.
+    def __init__(self, tile_img, x, y, speedx):
+        # Construtor da classe pai (Sprite).
+        pygame.sprite.Sprite.__init__(self)
+
+        # Aumenta o tamanho do tile.
+        #tile_img = pygame.transform.scale(tile_img, (100, 300))
+
+        # Define a imagem do tile.
+        self.image = tile_img
+        # Detalhes sobre o posicionamento.
+        self.rect = self.image.get_rect()
+
+        # Posiciona o tile
+        self.rect.x = x
+        self.rect.y = random.randrange(340, 657, 52)
 
         self.speedx = speedx
 
@@ -127,7 +151,7 @@ def load_assets(img_dir):
     assets = {}
     assets[PLAYER_IMG] = pygame.image.load(path.join(img_dir, 'Meu_projeto.png')).convert_alpha()
     assets[BLOCK_IMG] = pygame.image.load(path.join(img_dir, 'rodas.png')).convert_alpha()
-    assets[BACKGROUND_IMG] = pygame.image.load(path.join(img_dir, 'background-5.png')).convert()
+    assets[BACKGROUND_IMG] = pygame.image.load(path.join(img_dir, 'background-1.png')).convert()
     pygame.mixer.music.load(path.join(img_dir, 'lotus72.mp3'))
     pygame.mixer.music.set_volume(0.4)
     return assets
@@ -158,12 +182,14 @@ def game_screen(screen):
     # Cria blocos espalhados em posições aleatórias do mapa
     for i in range(INITIAL_BLOCKS):
         block_x = random.randint(0, WIDTH)
-        block_y1 = HEIGHT
-        block_y2 = 0
-        block = Tile(assets[BLOCK_IMG], block_x, block_y2, world_speed)
-        world_sprites.add(block)
+        block_y = random.randrange(-834, -503, 52)
+        block2_x = random.randint(0, WIDTH)
+        block2_y = random.randrange(340, 657, 52)
+        block = Tile(assets[BLOCK_IMG], block_x, block_y, world_speed)
+        block2 = Tile2(assets[BLOCK_IMG], block2_x, block2_y, world_speed)
+        world_sprites.add(block, block2)
         # Adiciona também no grupo de todos os sprites para serem atualizados e desenhados
-        all_sprites.add(block)
+        all_sprites.add(block, block2)
 
     PLAYING = 0
     DONE = 1
@@ -196,8 +222,18 @@ def game_screen(screen):
                 # Destrói o bloco e cria um novo no final da tela
                 block.kill()
                 block_x = random.randint(WIDTH, int(WIDTH * 1.5))
-                block_y = random.randint(0, int(HEIGHT * 0.5))
+                block_y = random.randrange(-834, -503, 52)
                 new_block = Tile(assets[BLOCK_IMG], block_x, block_y, world_speed)
+                all_sprites.add(new_block)
+                world_sprites.add(new_block)
+        
+        for block2 in world_sprites:
+            if block2.rect.right < 0:
+                # Destrói o bloco e cria um novo no final da tela
+                block2.kill()
+                block2_x = random.randint(WIDTH, int(WIDTH * 1.5))
+                block2_y = random.randrange(340, 657, 52)
+                new_block = Tile2(assets[BLOCK_IMG], block2_x, block2_y, world_speed)
                 all_sprites.add(new_block)
                 world_sprites.add(new_block)
 
