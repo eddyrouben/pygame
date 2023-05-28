@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -- coding: utf-8 --
 
 # Importando as bibliotecas necessárias.
 import pygame
@@ -27,23 +27,22 @@ BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 
 # Define a velocidade inicial do mundo
-world_speed = -10
+world_speed = -5
 
 # Outras constantes
 INITIAL_BLOCKS = 4
 TILE_SIZE = 80
 
-GRAVITY = 2
+# Define a aceleração da gravidade
+GRAVITY = 1
 # Define a velocidade inicial no pulo
-JUMP_SIZE = 17
+JUMP_SIZE = 20
 # Define a altura do chão
-#GROUND = HEIGHT * 5 // 6
-GROUND = 384
+GROUND = HEIGHT * 5 // 5.5
 
 # Define estados possíveis do jogador
 STILL = 0
-JUMPING = 1
-FALLING = 2
+
 
 # Class que representa os blocos do cenário
 class Tile(pygame.sprite.Sprite):
@@ -79,10 +78,9 @@ class Player(pygame.sprite.Sprite):
 
         # Construtor da classe pai (Sprite).
         pygame.sprite.Sprite.__init__(self)
-
+        
+        self.state = STILL
         # Aumenta o tamanho da imagem
-        self.state = STILL 
-
         player_img = pygame.transform.scale(player_img, (150, 100))
 
         # Define a imagem do sprite. Nesse exemplo vamos usar uma imagem estática (não teremos animação durante o pulo)
@@ -93,17 +91,24 @@ class Player(pygame.sprite.Sprite):
         # Começa no centro da janela
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = int(HEIGHT * 7 / 8)
-        self.speedy = 0 
+
+        # Começa no topo da janela e cai até o chão
+        self.rect.centerx = WIDTH / 2
+        self.rect.top = 0
+
+        self.speedy = 0
+        
     def update(self):
         self.speedy += GRAVITY
         # Atualiza o estado para caindo
-        if self.speedy > 0:
-            self.state = FALLING
+        #if self.speedy > 0:
+            #self.state = FALLING
+            #self.speedy -= JUMP_SIZE
         self.rect.y += self.speedy
         # Se bater no chão, para de cair
-        if self.rect.bottom > 768:
+        if self.rect.bottom > GROUND:
             # Reposiciona para a posição do chão
-            self.rect.bottom = 768
+            self.rect.bottom = GROUND
             # Para de cair
             self.speedy = 0
             # Atualiza o estado para parado
@@ -114,7 +119,7 @@ class Player(pygame.sprite.Sprite):
         # Só pode pular se ainda não estiver pulando ou caindo
         if self.state == STILL:
             self.speedy -= JUMP_SIZE
-            self.state = JUMPING
+            self.state = STILL
 
 
 # Carrega todos os assets de uma vez.
@@ -176,11 +181,10 @@ def game_screen(screen):
             # Verifica se foi fechado.
             if event.type == pygame.QUIT:
                 state = DONE
-
             if event.type == pygame.KEYDOWN:
                 # Dependendo da tecla, altera o estado do jogador.
                 if event.key == pygame.K_SPACE or event.key == pygame.K_UP:
-                    player.jump()
+                    player.jump() 
 
         # Depois de processar os eventos.
         # Atualiza a acao de cada sprite. O grupo chama o método update() de cada Sprite dentre dele.
