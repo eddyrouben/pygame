@@ -30,7 +30,7 @@ YELLOW = (255, 255, 0)
 world_speed = -5
 
 # Outras constantes
-INITIAL_BLOCKS = 4
+INITIAL_BLOCKS = 1
 TILE_SIZE = 80
 
 # Define a aceleração da gravidade
@@ -42,6 +42,8 @@ GROUND = 768
 
 # Define estados possíveis do jogador
 STILL = 0
+
+randyblock = random.randrange(-834, -503, 52)
 
 
 # Class que representa as rodas/canos
@@ -61,15 +63,51 @@ class Tile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         # Posiciona o tile
-        self.rect.x = x
-        self.rect.y = random.randrange(-834, -503, 52)
+        self.rect.x = 1024
+        self.rect.y = randyblock
 
         self.speedx = speedx
 
     def update(self):
         self.rect.x += self.speedx
 
+        if self.rect.right < 0:
+            randyblock = random.randrange(-834, -503, 52)
+            self.rect.x += (1024 + 162) * 1.5
+            self.rect.y = randyblock
+
+
 class Tile2(pygame.sprite.Sprite):
+
+    # Construtor da classe.
+    def __init__(self, tile_img, x, y, speedx, block):
+        # Construtor da classe pai (Sprite).
+        pygame.sprite.Sprite.__init__(self)
+
+        # Aumenta o tamanho do tile.
+        #tile_img = pygame.transform.scale(tile_img, (100, 300))
+
+        # Define a imagem do tile.
+        self.image = tile_img
+        # Detalhes sobre o posicionamento.
+        self.rect = self.image.get_rect()
+
+        # Posiciona o tile
+        self.rect.x = x
+        self.rect.y = randyblock + 1150
+
+        self.speedx = speedx
+
+        self.block = block
+
+    def update(self):
+        self.rect.x += self.speedx
+
+        if self.rect.right < 0:
+            self.rect.x += (1024 + 162) * 1.5
+            self.rect.y = self.block.rect.y + 1150
+
+class Tile3(pygame.sprite.Sprite):
 
     # Construtor da classe.
     def __init__(self, tile_img, x, y, speedx):
@@ -86,12 +124,47 @@ class Tile2(pygame.sprite.Sprite):
 
         # Posiciona o tile
         self.rect.x = x
-        self.rect.y = random.randrange(340, 657, 52)
+        self.rect.y = randyblock
 
         self.speedx = speedx
 
     def update(self):
         self.rect.x += self.speedx
+
+        if self.rect.right < 0:
+            randyblock = random.randrange(-834, -503, 52)
+            self.rect.x += 1024
+            self.rect.y = randyblock
+
+class Tile4(pygame.sprite.Sprite):
+
+    # Construtor da classe.
+    def __init__(self, tile_img, x, y, speedx, block):
+        # Construtor da classe pai (Sprite).
+        pygame.sprite.Sprite.__init__(self)
+
+        # Aumenta o tamanho do tile.
+        #tile_img = pygame.transform.scale(tile_img, (100, 300))
+
+        # Define a imagem do tile.
+        self.image = tile_img
+        # Detalhes sobre o posicionamento.
+        self.rect = self.image.get_rect()
+
+        # Posiciona o tile
+        self.rect.x = x
+        self.rect.y = randyblock + 1150
+
+        self.speedx = speedx
+
+        self.block = block
+
+    def update(self):
+        self.rect.x += self.speedx
+
+        if self.rect.right < 0:
+            self.rect.x += 1024
+            self.rect.y = self.block.rect.y + 1150
 
 
 # Classe Jogador que representa o herói
@@ -181,15 +254,21 @@ def game_screen(screen):
     world_sprites = pygame.sprite.Group()
     # Cria blocos espalhados em posições aleatórias do mapa
     for i in range(INITIAL_BLOCKS):
-        block_x = random.randint(0, WIDTH)
-        block_y = random.randrange(-834, -503, 52)
-        block2_x = random.randint(0, WIDTH)
-        block2_y = random.randrange(340, 657, 52)
+        block_x = 1024
+        block_y = randyblock
+        block2_x = 1024
+        block2_y = randyblock + 1150
+        block3_x = (1024 + 162) * 1.5
+        block3_y = randyblock
+        block4_x = (1024 + 162) * 1.5
+        block4_y = randyblock + 1150
         block = Tile(assets[BLOCK_IMG], block_x, block_y, world_speed)
-        block2 = Tile2(assets[BLOCK_IMG], block2_x, block2_y, world_speed)
-        world_sprites.add(block, block2)
+        block2 = Tile2(assets[BLOCK_IMG], block2_x, block2_y, world_speed, block)
+        block3 = Tile3(assets[BLOCK_IMG], block3_x, block3_y, world_speed)
+        block4 = Tile4(assets[BLOCK_IMG], block4_x, block4_y, world_speed, block3)
+        world_sprites.add(block, block2, block3, block4)
         # Adiciona também no grupo de todos os sprites para serem atualizados e desenhados
-        all_sprites.add(block, block2)
+        all_sprites.add(block, block2, block3, block4)
 
     PLAYING = 0
     DONE = 1
@@ -217,25 +296,30 @@ def game_screen(screen):
         all_sprites.update()
 
         # Verifica se algum bloco saiu da janela
-        for block in world_sprites:
-            if block.rect.right < 0:
-                # Destrói o bloco e cria um novo no final da tela
-                block.kill()
-                block_x = random.randint(WIDTH, int(WIDTH * 1.5))
-                block_y = random.randrange(-834, -503, 52)
-                new_block = Tile(assets[BLOCK_IMG], block_x, block_y, world_speed)
-                all_sprites.add(new_block)
-                world_sprites.add(new_block)
+        # for block in world_sprites:
+        #     if block.rect.right < 0:
+        #         # Destrói o bloco e cria um novo no final da tela
+        #         block.rect.x = 1024
+        #         block.rect.y = randyblock
+        #         print(block.rect.y)
+
+        # for block2 in world_sprites:
+        #     if block2.rect.right < 0:
+        #         block2.rect.x = 1024
+        #         block2.rect.y = 0
+        #         print(block2.rect.y)
         
-        for block2 in world_sprites:
-            if block2.rect.right < 0:
-                # Destrói o bloco e cria um novo no final da tela
-                block2.kill()
-                block2_x = random.randint(WIDTH, int(WIDTH * 1.5))
-                block2_y = random.randrange(340, 657, 52)
-                new_block = Tile2(assets[BLOCK_IMG], block2_x, block2_y, world_speed)
-                all_sprites.add(new_block)
-                world_sprites.add(new_block)
+        
+
+        # for block3 in world_sprites:
+        #     if block3.rect.right < 0:
+        #         block3.rect.x = 1024
+        #         block3.rect.y = randyblock
+
+        # for block4 in world_sprites:
+        #     if block4.rect.right < 0:
+        #         block4.rect.x = 1024
+        #         block4.rect.y = 0
 
         # A cada loop, redesenha o fundo e os sprites
         screen.fill(BLACK)
