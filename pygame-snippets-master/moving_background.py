@@ -301,31 +301,6 @@ def game_screen(screen):
         # Atualiza a acao de cada sprite. O grupo chama o método update() de cada Sprite dentre dele.
         all_sprites.update()
         score += 1
-        # Verifica se algum bloco saiu da janela
-        # for block in world_sprites:
-        #     if block.rect.right < 0:
-        #         # Destrói o bloco e cria um novo no final da tela
-        #         block.rect.x = 1024
-        #         block.rect.y = randyblock
-        #         print(block.rect.y)
-
-        # for block2 in world_sprites:
-        #     if block2.rect.right < 0:
-        #         block2.rect.x = 1024
-        #         block2.rect.y = 0
-        #         print(block2.rect.y)
-       
-       
-
-        # for block3 in world_sprites:
-        #     if block3.rect.right < 0:
-        #         block3.rect.x = 1024
-        #         block3.rect.y = randyblock
-
-        # for block4 in world_sprites:
-        #     if block4.rect.right < 0:
-        #         block4.rect.x = 1024
-        #         block4.rect.y = 0
 
         hits = pygame.sprite.spritecollide(player, all_blocks, True,pygame.sprite.collide_mask)
 
