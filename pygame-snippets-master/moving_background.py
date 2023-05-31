@@ -3,6 +3,7 @@
 # Importando as bibliotecas necessárias.
 import pygame
 import random
+import time
 from os import path
 
 # Estabelece a pasta que contem as figuras e sons.
@@ -63,17 +64,17 @@ class Tile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         # Posiciona o tile
-        self.rect.x = 1024
+        self.rect.x = (1024 + 162) 
         self.rect.y = randyblock
 
         self.speedx = speedx
 
-    def update(self):
+    def update(self):     
         self.rect.x += self.speedx
 
         if self.rect.right < 0:
             randyblock = random.randrange(-834, -503, 52)
-            self.rect.x += (1024 + 162) * 1.5
+            self.rect.x = (1024 + 162)
             self.rect.y = randyblock
 
 
@@ -93,8 +94,8 @@ class Tile2(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         # Posiciona o tile
-        self.rect.x = x
-        self.rect.y = randyblock + 1150
+        self.rect.x = (1024 + 162)
+        self.rect.y = randyblock + 1200
 
         self.speedx = speedx
 
@@ -104,8 +105,8 @@ class Tile2(pygame.sprite.Sprite):
         self.rect.x += self.speedx
 
         if self.rect.right < 0:
-            self.rect.x += (1024 + 162) * 1.5
-            self.rect.y = self.block.rect.y + 1150
+            self.rect.x = (1024 + 162)
+            self.rect.y = self.block.rect.y + 1200
 
 class Tile3(pygame.sprite.Sprite):
 
@@ -123,7 +124,7 @@ class Tile3(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         # Posiciona o tile
-        self.rect.x = x
+        self.rect.x = (1024 + 162) * 1.5
         self.rect.y = randyblock
 
         self.speedx = speedx
@@ -133,7 +134,7 @@ class Tile3(pygame.sprite.Sprite):
 
         if self.rect.right < 0:
             randyblock = random.randrange(-834, -503, 52)
-            self.rect.x += 1024
+            self.rect.x = (1024 + 162)
             self.rect.y = randyblock
 
 class Tile4(pygame.sprite.Sprite):
@@ -152,8 +153,8 @@ class Tile4(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         # Posiciona o tile
-        self.rect.x = x
-        self.rect.y = randyblock + 1150
+        self.rect.x = (1024 + 162) * 1.5
+        self.rect.y = randyblock + 1200
 
         self.speedx = speedx
 
@@ -163,8 +164,8 @@ class Tile4(pygame.sprite.Sprite):
         self.rect.x += self.speedx
 
         if self.rect.right < 0:
-            self.rect.x += 1024
-            self.rect.y = self.block.rect.y + 1150
+            self.rect.x = (1024 + 162)
+            self.rect.y = self.block.rect.y + 1200
 
 
 # Classe Jogador que representa o herói
@@ -175,7 +176,7 @@ class Player(pygame.sprite.Sprite):
 
         # Construtor da classe pai (Sprite).
         pygame.sprite.Sprite.__init__(self)
-        
+       
         self.state = STILL
         # Aumenta o tamanho da imagem
         player_img = pygame.transform.scale(player_img, (150, 100))
@@ -194,7 +195,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.top = 0
 
         self.speedy = 0
-        
+       
     def update(self):
         self.speedy += GRAVITY
         # Atualiza o estado para caindo
@@ -227,13 +228,16 @@ def load_assets(img_dir):
     assets[BACKGROUND_IMG] = pygame.image.load(path.join(img_dir, 'background-1.png')).convert()
     pygame.mixer.music.load(path.join(img_dir, 'lotus72.mp3'))
     pygame.mixer.music.set_volume(0.4)
+    assets["score_font"] = pygame.font.Font('img/PressStart2P.ttf', 28)
     return assets
 
+clock = pygame.time.Clock()
 
 def game_screen(screen):
     # Variável para o ajuste de velocidade
     clock = pygame.time.Clock()
-
+    game = True
+    score = 0
     # Carrega assets
     assets = load_assets(img_dir)
 
@@ -247,6 +251,7 @@ def game_screen(screen):
     player = Player(assets[PLAYER_IMG])
     # Cria um grupo de todos os sprites e adiciona o jogador.
     all_sprites = pygame.sprite.Group()
+    all_blocks = pygame.sprite.Group()
     all_sprites.add(player)
 
     # Cria um grupo para guardar somente os sprites do mundo (obstáculos, objetos, etc).
@@ -257,11 +262,11 @@ def game_screen(screen):
         block_x = 1024
         block_y = randyblock
         block2_x = 1024
-        block2_y = randyblock + 1150
+        block2_y = randyblock + 1200
         block3_x = (1024 + 162) * 1.5
         block3_y = randyblock
         block4_x = (1024 + 162) * 1.5
-        block4_y = randyblock + 1150
+        block4_y = randyblock + 1200
         block = Tile(assets[BLOCK_IMG], block_x, block_y, world_speed)
         block2 = Tile2(assets[BLOCK_IMG], block2_x, block2_y, world_speed, block)
         block3 = Tile3(assets[BLOCK_IMG], block3_x, block3_y, world_speed)
@@ -269,6 +274,7 @@ def game_screen(screen):
         world_sprites.add(block, block2, block3, block4)
         # Adiciona também no grupo de todos os sprites para serem atualizados e desenhados
         all_sprites.add(block, block2, block3, block4)
+        all_blocks.add(block, block2, block3, block4)
 
     PLAYING = 0
     DONE = 1
@@ -289,12 +295,12 @@ def game_screen(screen):
             if event.type == pygame.KEYDOWN:
                 # Dependendo da tecla, altera o estado do jogador.
                 if event.key == pygame.K_SPACE or event.key == pygame.K_UP:
-                    player.jump() 
+                    player.jump()
 
         # Depois de processar os eventos.
         # Atualiza a acao de cada sprite. O grupo chama o método update() de cada Sprite dentre dele.
         all_sprites.update()
-
+        score += 1
         # Verifica se algum bloco saiu da janela
         # for block in world_sprites:
         #     if block.rect.right < 0:
@@ -308,8 +314,8 @@ def game_screen(screen):
         #         block2.rect.x = 1024
         #         block2.rect.y = 0
         #         print(block2.rect.y)
-        
-        
+       
+       
 
         # for block3 in world_sprites:
         #     if block3.rect.right < 0:
@@ -320,6 +326,13 @@ def game_screen(screen):
         #     if block4.rect.right < 0:
         #         block4.rect.x = 1024
         #         block4.rect.y = 0
+
+        hits = pygame.sprite.spritecollide(player, all_blocks, True,pygame.sprite.collide_mask)
+
+        if len(hits) > 0 or player.rect.y<=-120:
+           time.sleep(1.5) # Precisa esperar senão fecha
+
+           state = DONE
 
         # A cada loop, redesenha o fundo e os sprites
         screen.fill(BLACK)
@@ -339,6 +352,12 @@ def game_screen(screen):
         screen.blit(background, background_rect2)
 
         all_sprites.draw(screen)
+
+        # Desenhando o score
+        text_surface = assets['score_font'].render("{:08d}".format(score), True, (YELLOW))
+        text_rect = text_surface.get_rect()
+        text_rect.midtop = (WIDTH / 2,  10)
+        screen.blit(text_surface, text_rect)
 
         # Depois de desenhar tudo, inverte o display.
         pygame.display.flip()
