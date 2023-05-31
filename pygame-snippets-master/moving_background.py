@@ -5,6 +5,10 @@ import pygame
 import random
 import time
 from os import path
+from init_screen import init_screen
+from options_screen import options_screen
+from final_screen import final_screen
+
 
 # Estabelece a pasta que contem as figuras e sons.
 img_dir = path.join(path.dirname(__file__), 'img')
@@ -277,7 +281,7 @@ def game_screen(screen):
         all_blocks.add(block, block2, block3, block4)
 
     PLAYING = 0
-    DONE = 1
+    DONE = 5
 
     state = PLAYING
     pygame.mixer.music.play(loops=-1)
@@ -336,6 +340,8 @@ def game_screen(screen):
 
         # Depois de desenhar tudo, inverte o display.
         pygame.display.flip()
+    
+    return state, score
 
 
 # Inicialização do Pygame.
@@ -354,8 +360,22 @@ print(TITULO.upper())
 print('*' * len(TITULO))
 print('Este exemplo não é interativo.')
 
-# Comando para evitar travamentos.
-try:
-    game_screen(screen)
-finally:
-    pygame.quit()
+state = 1
+final_score = 0
+
+while state != 2:
+    if state == 1:
+        state = init_screen(screen)
+    elif state == 3:
+        state, final_score = game_screen(screen)
+    elif state == 4:
+        state = options_screen(screen)
+    elif state == 5:
+        state = final_screen(screen, final_score)
+    else:
+        state = 2
+
+
+#Comando para evitar travamentos.
+
+pygame.quit()
