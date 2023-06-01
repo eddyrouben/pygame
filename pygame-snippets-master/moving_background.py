@@ -15,7 +15,7 @@ img_dir = path.join(path.dirname(__file__), 'img')
 mp3_dir = path.join(path.dirname(__file__), 'img')
 
 # Dados gerais do jogo.
-TITULO = 'Exemplo de Fundo em Movimento'
+TITULO = 'Ayrton Senna Simulator'
 WIDTH = 1024 # Largura da tela
 HEIGHT = 768 # Altura da tela
 FPS = 60 # Frames por segundo
@@ -48,6 +48,7 @@ GROUND = 768
 # Define estados possíveis do jogador
 STILL = 0
 
+# Randomiza a altura das rodas
 randyblock = random.randrange(-834, -503, 52)
 
 
@@ -76,6 +77,7 @@ class Tile(pygame.sprite.Sprite):
     def update(self):     
         self.rect.x += self.speedx
 
+        # Atualiza a posição das rodas quando saem da tela
         if self.rect.right < 0:
             randyblock = random.randrange(-834, -503, 52)
             self.rect.x = (1024 + 162)
@@ -363,6 +365,7 @@ print('Este exemplo não é interativo.')
 state = 1
 final_score = 0
 
+# Leva o jogo para as diferentes telas
 while state != 2:
     if state == 1:
         state = init_screen(screen)
@@ -376,6 +379,5 @@ while state != 2:
         state = 2
 
 
-#Comando para evitar travamentos.
 
 pygame.quit()

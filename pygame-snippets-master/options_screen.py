@@ -37,7 +37,7 @@ def options_screen(screen):
 
             
 
-        # A cada loop, redesenha o fundo e os sprites
+        # A cada loop, redesenha o fundo
         screen.fill((0,0,0))
 
         screen.blit(background,(0,0))

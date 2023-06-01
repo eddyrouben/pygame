@@ -22,7 +22,6 @@ def final_screen(screen, score):
 
     
 
-    # Display the text on the screen
 
     running = True
     while running:
@@ -46,15 +45,16 @@ def final_screen(screen, score):
 
             
 
-        # A cada loop, redesenha o fundo e os sprites
+        # A cada loop, redesenha o fundo
         screen.fill((0,0,0))
         
         screen.blit(background,(0,0))
 
-        # Create a text surface for the score
+        # Cria o texto do score
         text = font.render(str(score), True, (255, 255, 0))
         text_rect = text.get_rect(center=(512, (768//2) - 50))
 
+        # A cada loop, redesenha o fundo
         screen.blit(text, text_rect)
 
 
